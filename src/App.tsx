@@ -107,7 +107,21 @@ export default class App extends React.Component {
 
   calculatePrice = () => {
     const { inputDuration, inputDistance, selectedCarPricePerDay, selectedCarPricePerKm } = this.state;
-    return (inputDuration * selectedCarPricePerDay) + (inputDistance * selectedCarPricePerKm);
+    let price = (inputDuration * selectedCarPricePerDay) + (inputDistance * selectedCarPricePerKm);
+    let decrease = 0;
+    if (inputDuration < 4) {
+      decrease = price * 0.1;
+      price =  price - decrease;
+    }     
+    if (inputDuration >= 4 && inputDuration < 10) {
+      decrease = price * 0.3;
+      price =  price - decrease;
+    }     
+    if (inputDuration >= 10) {
+      decrease = price * 0.5;
+      price =  price - decrease;
+    } 
+    return price;
   }
 
   componentDidMount() {
