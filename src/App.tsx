@@ -137,7 +137,7 @@ export default class App extends React.Component {
           duration: this.state.inputDuration,
         }
       }).then((response) => {
-        this.setState({ cars: response.data });
+        this.setState({ cars: response.data, selectedCar:"Select a car!", selectedCarPricePerDay: 0, selectedCarPricePerKm: 0 });
       });
   }
 
