@@ -50,7 +50,17 @@ const styles = {
     textAlign: "center" as const,
     margin: 1 as const,
     width: "15vw" as const,
-    height: "40vh" as const,
+    // height: "40vh" as const,
+    border: "solid 4px grey" as const,
+    borderRadius: "20px" as const,
+    boxShadow: "1px 3px 1px grey",
+  },  
+  pricePaper: {
+    backgroundColor: "transparent" as const, 
+    verticalAlign: "middle" as const,
+    textAlign: "center" as const,
+    margin: 1 as const,
+    width: "15vw" as const,
     border: "solid 4px grey" as const,
     borderRadius: "20px" as const,
     boxShadow: "1px 3px 1px grey",
@@ -63,9 +73,9 @@ const styles = {
     borderRadius: "15px" as const,
     boxShadow: "1px 3px 1px grey",
   },
-  bookButton: {
+  button: {
     marginTop: "2vh" as const,
-    marginBottom: "1vh" as const,
+    marginBottom: "2.5vh" as const,
     fontWeight: "bold" as const,
     border: "solid 2px #831869",
     fontColor: "#831869" as const,
@@ -84,12 +94,21 @@ function valuetext(value: number) {
   return `${value}`;
 }
 
+
 export default class App extends React.Component {
   state = {
     inputDuration: 1,
     inputDistance: 50,
+    selectedCarPricePerDay: 0,
+    selectedCarPricePerKm: 0,
+    selectedCar: "Select a Car!",
     cars: [],
   };
+
+  calculatePrice = () => {
+    const { inputDuration, inputDistance, selectedCarPricePerDay, selectedCarPricePerKm } = this.state;
+    return (inputDuration * selectedCarPricePerDay) + (inputDistance * selectedCarPricePerKm);
+  }
 
   componentDidMount() {
     axios.get("/cars.json").then((response) => {
@@ -110,6 +129,7 @@ export default class App extends React.Component {
 
   handleDurationChange = (event, value) => this.setState({ inputDuration: value });
   handleDistanceChange = (event, value) => this.setState({ inputDistance: value });
+  handleSelectedCar = (pricePerDay, pricePerKm, carBrand, carModel) => this.setState({ selectedCarPricePerDay: pricePerDay, selectedCarPricePerKm: pricePerKm, selectedCar: `${carBrand} ${carModel}` });
 
   CarCatalog = () => {
     const { cars } = this.state;
@@ -122,8 +142,8 @@ export default class App extends React.Component {
                       <h1>{car.brand} {car.model}</h1>
                       <CarInfo><b>${car.pricePerDay}</b>/day</CarInfo>
                       <CarInfo><b>${car.pricePerKm}</b>/km</CarInfo>
-                      <Button variant="outlined" color="secondary" style= {styles.bookButton} size= "large">
-                       BOOK
+                      <Button variant="outlined" color="secondary" style= {styles.button} size= "large" onClick={() => this.handleSelectedCar(car.pricePerDay, car.pricePerKm, car.brand, car.model)}>
+                       SELECT
                         </Button>
               </Paper>
             </Col>
@@ -162,8 +182,29 @@ export default class App extends React.Component {
                       marks
                       onChange={this.handleDistanceChange}
                     />
-                      <Button variant="outlined" color="primary" style= {styles.bookButton} size= "large" onClick={this.updateQuery}>
+                      <Button variant="outlined" color="primary" style= {styles.button} size= "large" onClick={this.updateQuery}>
                        SEARCH
+                        </Button>
+              </Paper>
+              <this.PriceCalculator/>
+            </Col>
+      </>
+    );
+  };
+
+  PriceCalculator = () => {
+    return (
+      <>
+            <Col span={3} style= {styles.column}>
+              <Paper style={styles.pricePaper}>
+                      <h2>Total Cost</h2>
+                      {this.state.selectedCar}<br/>
+                      <CarInfo>
+                        <b>
+                        ${this.calculatePrice()}
+                        </b></CarInfo>
+                      <Button variant="outlined" color="primary" style= {styles.button} size= "large" onClick={this.updateQuery}>
+                       BOOK
                         </Button>
               </Paper>
             </Col>
@@ -185,7 +226,7 @@ export default class App extends React.Component {
         </div>
         <Col span={3}>
           <div style= {styles.filterBox}>
-            <this.CarFilters />
+            <this.CarFilters /><br/>
           </div>
         </Col>
         <div style={styles.carCatalog}>
