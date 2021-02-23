@@ -10,3 +10,4 @@ document.addEventListener('DOMContentLoaded', () => {
 
   ReactDom.render(<App />, container)
 });
+
